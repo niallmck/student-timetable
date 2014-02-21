@@ -4,8 +4,14 @@ public class Offering {
 	
 	private int id;
 	private Course course;
-	private String daysTimes;
+	private String dayTime;
 	
+	public Offering(int id, Course course, String dayTime) {
+		this.id = id;
+		this.course = course;
+		this.dayTime = dayTime;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -22,11 +28,11 @@ public class Offering {
 		this.course = course;
 	}
 	
-	public String getDaysTimes() {
-		return daysTimes;
+	public String getDayTime() {
+		return dayTime;
 	}
 	
-	public void setDaysTimes(String daysTimes) {
-		this.daysTimes = daysTimes;
+	public void setDaysTime(String dayTime) {
+		this.dayTime = dayTime;
 	}
 }
