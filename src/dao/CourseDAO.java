@@ -18,9 +18,9 @@ public class CourseDAO implements GenericDAO {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			Statement s = conn.createStatement();
-			ResultSet rs = s.executeQuery("select * from course"); 
+			ResultSet rs = s.executeQuery("SELECT * FROM course"); 
             while (rs.next()) {
-            	courses.add(new Course(rs.getString("name"), rs.getInt("credits")));
+            	courses.add(new Course(rs.getInt("id"), rs.getString("name"), rs.getInt("credits")));
             }
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -31,13 +31,33 @@ public class CourseDAO implements GenericDAO {
 		return courses;
 	}
 	
-	public void update(Course course){
+	public Object findByName(String name){
+		Course course = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement s = conn.prepareStatement("UPDATE course SET name = '?' and credits = ? WHERE id = ?");
-			s.setString(1, course.getName());
-			s.setInt(2, course.getCredits());
-			s.setInt(3, course.getId());
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM course WHERE name = ?");
+			ps.setString(1, name);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()){
+				course = new Course(rs.getInt("id"), rs.getString("name"), rs.getInt("credits"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			ConnectionManager.closeConnection();
+		}
+		return course;
+	}
+	
+	public void update(Object object){
+		Course course = (Course) object;
+		try {
+			Connection conn = ConnectionManager.getConnection();
+			PreparedStatement ps = conn.prepareStatement("UPDATE course SET name = ? and credits = ? WHERE id = ?");
+			ps.setString(1, course.getName());
+			ps.setInt(2, course.getCredits());
+			ps.setInt(3, course.getId());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -46,11 +66,13 @@ public class CourseDAO implements GenericDAO {
 		}
 	}
 	
-	public void delete(Course course){
+	public void delete(Object object){
+		Course course = (Course) object;
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement s = conn.prepareStatement("DELETE from course WHERE id = ?");
-			s.setInt(1, course.getId());
+			PreparedStatement ps = conn.prepareStatement("DELETE from course WHERE id = ?");
+			ps.setInt(1, course.getId());
+			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -59,13 +81,14 @@ public class CourseDAO implements GenericDAO {
 		}
 	}
 	
-	public void create(Course course){
+	public void create(Object object){
+		Course course = (Course) object;
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement s = conn.prepareStatement("INSERT INTO course (name, credits) VALUES(?, ?)");
-			s.setString(1, course.getName());
-			s.setInt(2, course.getCredits());
-			s.execute();
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO course (name, credits) VALUES(?, ?)");
+			ps.setString(1, course.getName());
+			ps.setInt(2, course.getCredits());
+			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -73,5 +96,6 @@ public class CourseDAO implements GenericDAO {
 			ConnectionManager.closeConnection();
 		}
 	}
+
 
 }

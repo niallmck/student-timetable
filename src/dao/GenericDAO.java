@@ -2,13 +2,13 @@ package dao;
 
 import java.util.List;
 
-import entity.Course;
 
 public interface GenericDAO {
 	
 	public List<Object> getAll();
-	public void update(Course course);
-	public void delete(Course course);
-	public void create(Course course);
+	public Object findByName(String name);
+	public void update(Object object);
+	public void delete(Object object);
+	public void create(Object object);
 
 }
