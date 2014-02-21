@@ -3,10 +3,10 @@ import java.sql.*;
 public class Course {
 	private String name;
 	private int credits;
-	static String url = "jdbc:odbc:Registration";
+	static String url = "jdbc:mysql://localhost:3306/studenttimetable";
 	static { 
 		try { 
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver"); 
+			Class.forName("com.mysql.jdbc.Driver"); 
 			}
 		catch (Exception ignored) {} 
 	}
@@ -14,7 +14,7 @@ public class Course {
 	public static Course create(String name, int credits) throws Exception {
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url, "", "");
+			conn = DriverManager.getConnection(url, "root", "dha7fZn7aQ8ssw6c24zFWMhS");
 			Statement statement = conn.createStatement();
 			statement.executeUpdate("DELETE FROM course WHERE name = '" + name + "';");
 			statement.executeUpdate("INSERT INTO course VALUES ('" + name + "', '" + credits + "');");
@@ -31,7 +31,7 @@ public class Course {
 	public static Course find(String name) {
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url, "", "");
+			conn = DriverManager.getConnection(url, "root", "dha7fZn7aQ8ssw6c24zFWMhS");
 			Statement statement = conn.createStatement();
 			ResultSet result = statement.executeQuery("SELECT * FROM course WHERE Name = '" + name + "';");
 			if (!result.next()) return null;
@@ -52,7 +52,7 @@ public class Course {
 	public void update() throws Exception {
 		Connection conn = null;
 		try {
-			conn = DriverManager.getConnection(url, "", "");
+			conn = DriverManager.getConnection(url, "root", "dha7fZn7aQ8ssw6c24zFWMhS");
 			Statement statement = conn.createStatement();
 			statement.executeUpdate("DELETE FROM COURSE WHERE name = '" + name + "';");
 			statement.executeUpdate("INSERT INTO course VALUES('" + name + "','" + credits + "');");
