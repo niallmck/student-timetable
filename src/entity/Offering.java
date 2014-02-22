@@ -12,6 +12,11 @@ public class Offering {
 		this.dayTime = dayTime;
 	}
 
+	public Offering(Course course, String dayTime) {
+		this.course = course;
+		this.dayTime = dayTime;
+	}
+
 	public int getId() {
 		return id;
 	}

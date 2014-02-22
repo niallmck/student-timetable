@@ -8,7 +8,6 @@ import java.util.StringTokenizer;
 
 public class Schedule {
 	
-	private int id;
 	private String name;
 	private int credits = 0;
 	public static final int MIN_CREDITS = 12;
@@ -31,10 +30,6 @@ public class Schedule {
 
 	public String getName() {
 		return name;
-	}
-
-	public int getId() {
-		return id;
 	}
 	
 

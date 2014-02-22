@@ -3,8 +3,9 @@ package test;
 import java.util.Collection;
 import java.util.List;
 
-import dao.DAOManager;
-import dao.DAOType;
+import dao.CourseDAO;
+import dao.OfferingDAO;
+import dao.ScheduleDAO;
 import timetable.ScheduleManager;
 import junit.framework.TestCase;
 import entity.Course;
@@ -103,42 +104,42 @@ public class TestSchedule extends TestCase{
 	}
 
 	public void testCourseCreate() throws Exception {
-		Course c = Course.create("CS202", 1);
-		Course c2 = (Course) DAOManager.getDAO(DAOType.COURSE).findByName("CS202");
+		Course c = CourseDAO.create(new Course("CS202", 1));
+		Course c2 = CourseDAO.findByName("CS202");
 		assertEquals("CS202", c2.getName());
-		Course c3 = Course.find("Nonexistent");
+		Course c3 = CourseDAO.findByName("Nonexistent");
 		assertNull(c3);
 	}
-/*
+
 	public void testOfferingCreate() throws Exception {
-		Course c = Course.create("CS202", 2);
-		Offering offering = Offering.create(c, "M10");
+		Course c = CourseDAO.create(new Course("CS202", 2));
+		Offering offering = OfferingDAO.create(new Offering(c, "M10"));
 		assertNotNull(offering);
 	}
 
 	public void testPersistentSchedule() throws Exception {
-		Schedule s = Schedule.create("Bob");
+		Schedule s = ScheduleDAO.create(new Schedule("Bob"));
 		assertNotNull(s);
 	}
 
 	public void testScheduleUpdate() throws Exception {
-		Course cs101 = Course.create("CS101", 3);
-		cs101.update();
-		Offering off1 = Offering.create(cs101, "M10");
-		off1.update();
-		Offering off2 = Offering.create(cs101, "T9");
-		off2.update();
-		Schedule s = Schedule.create("Bob");
+		Course cs101 = CourseDAO.create(new Course("CS101", 3));
+		CourseDAO.update(cs101);
+		Offering off1 = OfferingDAO.create(new Offering(cs101, "M10"));
+		OfferingDAO.update(off1);
+		Offering off2 =  OfferingDAO.create(new Offering(cs101, "T9"));
+		OfferingDAO.update(off2);
+		Schedule s = ScheduleDAO.create(new Schedule("Bob"));
 		s.add(off1);
 		s.add(off2);
-		s.update();
-		Schedule s2 = Schedule.create("Alice");
+		ScheduleDAO.update(s);
+		Schedule s2 = ScheduleDAO.create(new Schedule("Alice"));
 		s2.add(off1);
-		s2.update();
-		Schedule s3 = Schedule.find("Bob");
-		assertEquals(2, s3.schedule.size());
-		Schedule s4 = Schedule.find("Alice");
-		assertEquals(1, s4.schedule.size());
-	}*/
+		ScheduleDAO.update(s2);
+		Schedule s3 = ScheduleDAO.findByName("Bob");
+		assertEquals(2, s3.getSchedule().size());
+		Schedule s4 = ScheduleDAO.findByName("Alice");
+		assertEquals(1, s4.getSchedule().size());
+	}
 
 }

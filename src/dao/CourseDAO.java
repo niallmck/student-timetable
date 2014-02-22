@@ -6,15 +6,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 import database.ConnectionManager;
 import entity.Course;
 
-public class CourseDAO implements GenericDAO {
+public class CourseDAO {
 		
-	public List<Object> getAll(){
-		List<Object> courses = new ArrayList<Object>();
+	public static ArrayList<Course> getAll(){
+		ArrayList<Course> courses = new ArrayList<Course>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			Statement s = conn.createStatement();
@@ -31,7 +30,7 @@ public class CourseDAO implements GenericDAO {
 		return courses;
 	}
 	
-	public Object findByName(String name){
+	public static Course findByName(String name){
 		Course course = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -50,8 +49,7 @@ public class CourseDAO implements GenericDAO {
 		return course;
 	}
 	
-	public void update(Object object){
-		Course course = (Course) object;
+	public static void update(Course course){
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("UPDATE course SET name = ? and credits = ? WHERE id = ?");
@@ -66,8 +64,7 @@ public class CourseDAO implements GenericDAO {
 		}
 	}
 	
-	public void delete(Object object){
-		Course course = (Course) object;
+	public static void delete(Course course){
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("DELETE from course WHERE id = ?");
@@ -81,8 +78,7 @@ public class CourseDAO implements GenericDAO {
 		}
 	}
 	
-	public void create(Object object){
-		Course course = (Course) object;
+	public static Course create(Course course){
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO course (name, credits) VALUES(?, ?)");
@@ -95,6 +91,7 @@ public class CourseDAO implements GenericDAO {
 		finally{
 			ConnectionManager.closeConnection();
 		}
+		return course;
 	}
 
 

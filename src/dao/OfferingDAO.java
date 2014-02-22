@@ -12,17 +12,16 @@ import database.ConnectionManager;
 import entity.Course;
 import entity.Offering;
 
-public class OfferingDAO implements GenericDAO {
+public class OfferingDAO {
 
-	@Override
-	public List<Object> getAll() {
+	public static List<Object> getAll() {
 		List<Object> offerings = new ArrayList<Object>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM offering"); 
             while (rs.next()) {
-            	Course course = (Course) DAOManager.getDAO(DAOType.COURSE).findByName(rs.getString("name"));
+            	Course course = (Course) CourseDAO.findByName(rs.getString("name"));
             	offerings.add(new Offering(rs.getInt("id"), course, rs.getString("daystimes")));
             }
 		} catch (SQLException e) {
@@ -34,8 +33,7 @@ public class OfferingDAO implements GenericDAO {
 		return offerings;
 	}
 
-	@Override
-	public Object findByName(String name) {
+	public static Object findByName(String name) {
 		Offering offering = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -43,7 +41,7 @@ public class OfferingDAO implements GenericDAO {
 			ps.setString(1, name);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()){
-				Course course = (Course) DAOManager.getDAO(DAOType.COURSE).findByName(name);
+				Course course = (Course) CourseDAO.findByName(name);
 				offering = new Offering(rs.getInt("id"), course, rs.getString("daystimes"));
 			}
 		} catch (SQLException e) {
@@ -55,7 +53,7 @@ public class OfferingDAO implements GenericDAO {
 		return offering;
 	}
 	
-	public Object findById(int id) {
+	public static Object findById(int id) {
 		Offering offering = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -64,7 +62,7 @@ public class OfferingDAO implements GenericDAO {
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()){
 				String courseName = rs.getString("name");
-				Course course = (Course) DAOManager.getDAO(DAOType.COURSE).findByName(courseName);
+				Course course = (Course) CourseDAO.findByName(courseName);
 				offering = new Offering(rs.getInt("id"), course, rs.getString("daystimes"));
 			}
 		} catch (SQLException e) {
@@ -76,8 +74,7 @@ public class OfferingDAO implements GenericDAO {
 		return offering;
 	}
 
-	@Override
-	public void update(Object object) {
+	public static void update(Object object) {
 		Offering offering = (Offering) object;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -94,8 +91,7 @@ public class OfferingDAO implements GenericDAO {
 		
 	}
 
-	@Override
-	public void delete(Object object) {
+	public static void delete(Object object) {
 		Offering offering = (Offering) object;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -111,9 +107,7 @@ public class OfferingDAO implements GenericDAO {
 		
 	}
 
-	@Override
-	public void create(Object object) {
-		Offering offering = (Offering) object;
+	public static Offering create(Offering offering) {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("INSERT INTO offering (name, daystimes) VALUES(?, ?)");
@@ -126,6 +120,7 @@ public class OfferingDAO implements GenericDAO {
 		finally{
 			ConnectionManager.closeConnection();
 		}
+		return offering;
 	}
 
 }
