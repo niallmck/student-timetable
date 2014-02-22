@@ -6,6 +6,8 @@ public class DAOManager {
 		switch (type){
 		case COURSE :
 			return new CourseDAO();
+		case OFFERING :
+			return new OfferingDAO();
 		default:
 			return null;
 		}

@@ -54,6 +54,27 @@ public class OfferingDAO implements GenericDAO {
 		}
 		return offering;
 	}
+	
+	public Object findById(int id) {
+		Offering offering = null;
+		try {
+			Connection conn = ConnectionManager.getConnection();
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM offering WHERE id = ?");
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()){
+				String courseName = rs.getString("name");
+				Course course = (Course) DAOManager.getDAO(DAOType.COURSE).findByName(courseName);
+				offering = new Offering(rs.getInt("id"), course, rs.getString("daystimes"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			ConnectionManager.closeConnection();
+		}
+		return offering;
+	}
 
 	@Override
 	public void update(Object object) {
