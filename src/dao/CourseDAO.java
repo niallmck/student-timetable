@@ -81,10 +81,17 @@ public class CourseDAO {
 	public static Course create(Course course){
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO course (name, credits) VALUES(?, ?)");
+			String query = "INSERT INTO course (name, credits) VALUES(?, ?)";
+			PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, course.getName());
 			ps.setInt(2, course.getCredits());
 			ps.execute();
+			ResultSet rs = ps.getGeneratedKeys();
+            if(rs.next())
+            {
+                int last_inserted_id = rs.getInt(1);
+                course.setId(last_inserted_id);
+            }
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

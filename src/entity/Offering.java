@@ -4,17 +4,17 @@ public class Offering {
 	
 	private int id;
 	private Course course;
-	private String dayTime;
+	private String daysTimes;
 	
-	public Offering(int id, Course course, String dayTime) {
+	public Offering(int id, Course course, String daysTimes) {
 		this.id = id;
 		this.course = course;
-		this.dayTime = dayTime;
+		this.daysTimes = daysTimes;
 	}
 
-	public Offering(Course course, String dayTime) {
+	public Offering(Course course, String daysTimes) {
 		this.course = course;
-		this.dayTime = dayTime;
+		this.daysTimes = daysTimes;
 	}
 
 	public int getId() {
@@ -33,11 +33,11 @@ public class Offering {
 		this.course = course;
 	}
 	
-	public String getDayTime() {
-		return dayTime;
+	public String getDaysTimes() {
+		return daysTimes;
 	}
 	
-	public void setDaysTime(String dayTime) {
-		this.dayTime = dayTime;
+	public void setDaysTimes(String dayTime) {
+		this.daysTimes = dayTime;
 	}
 }

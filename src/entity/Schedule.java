@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 public class Schedule {
 	
+	private int id;
 	private String name;
 	private int credits = 0;
 	public static final int MIN_CREDITS = 12;
@@ -43,6 +44,11 @@ public class Schedule {
 	
 	public void authorizeOverload(boolean authorized) {
 		permission = authorized;
+	}
+
+	public void setId(int id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

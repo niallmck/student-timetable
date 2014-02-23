@@ -62,10 +62,12 @@ public class OfferingDAO {
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()){
 				String courseName = rs.getString("name");
+				int offeringId = rs.getInt("id");
+				String daystimes =  rs.getString("daystimes");
 				Course course = (Course) CourseDAO.findByName(courseName);
-				offering = new Offering(rs.getInt("id"), course, rs.getString("daystimes"));
+				offering = new Offering(offeringId, course, daystimes);
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		finally{
@@ -80,7 +82,7 @@ public class OfferingDAO {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("UPDATE offering SET name = ? and daytimes = ? WHERE id = ?");
 			ps.setString(1, offering.getCourse().getName());
-			ps.setString(2, offering.getDayTime());
+			ps.setString(2, offering.getDaysTimes());
 			ps.setInt(3, offering.getId());
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -110,10 +112,17 @@ public class OfferingDAO {
 	public static Offering create(Offering offering) {
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement ps = conn.prepareStatement("INSERT INTO offering (name, daystimes) VALUES(?, ?)");
+			String query = "INSERT INTO offering (name, daystimes) VALUES(?, ?)";
+			PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, offering.getCourse().getName());
-			ps.setString(2, offering.getDayTime());
+			ps.setString(2, offering.getDaysTimes());
 			ps.execute();
+			ResultSet rs = ps.getGeneratedKeys();
+            if(rs.next())
+            {
+                int last_inserted_id = rs.getInt(1);
+                offering.setId(last_inserted_id);
+            }
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -24,13 +24,11 @@ public class ConnectionManager {
 			if (conn == null || conn.isClosed()){
 				conn = DriverManager.getConnection(url, username, password);
 				System.out.println("Connected to Database.");
-				return conn;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return conn;
 	}
 	
 	public static void closeConnection(){
@@ -40,7 +38,6 @@ public class ConnectionManager {
 				System.out.println("Closed Database Connection");
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

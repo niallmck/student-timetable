@@ -27,24 +27,34 @@ public class ScheduleDAO {
 	}
 
 	public static ArrayList<Schedule> getAll() {
-		ArrayList<Schedule> schedule = new ArrayList<Schedule>();
+		ArrayList<Schedule> scheduleList = new ArrayList<Schedule>();
+		ArrayList<String> scheduleNames = new ArrayList<String>();
+		
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery("SELECT DISTINCT name FROM schedule");
 			while (rs.next()) {
-				schedule.add(findByName(rs.getString("name")));
+				scheduleNames.add(rs.getString("name"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionManager.closeConnection();
 		}
-		return schedule;
+		
+		// Use the findByName method to populate the ScheduleList
+		for (int i = 0; i < scheduleNames.size(); i++){
+			scheduleList.add(findByName(scheduleNames.get(i)));
+		}
+		
+		
+		return scheduleList;
 	}
 
 	public static Schedule findByName(String name) {
 		Schedule schedule = null;
+		ArrayList<Integer> offeringIds = new ArrayList<Integer>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn
@@ -52,16 +62,22 @@ public class ScheduleDAO {
 			ps.setString(1, name);
 			ResultSet rs = ps.executeQuery();
 			schedule = new Schedule(name);
+
 			while (rs.next()) {
-				int offeringId = rs.getInt("offeringid");
-				Offering offering = (Offering) OfferingDAO.findById(offeringId);
-				schedule.add(offering);
+				offeringIds.add(rs.getInt("offeringid"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionManager.closeConnection();
 		}
+		
+		// We then use the OfferingDAO to retrieve the Offering objects associated with the schedule.
+		for (int i = 0; i < offeringIds.size(); i++){
+			Offering offering = (Offering) OfferingDAO.findById(offeringIds.get(i));
+			schedule.add(offering);
+		}
+		
 		return schedule;
 	}
 
@@ -114,11 +130,19 @@ public class ScheduleDAO {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			
-			if (scheduleList.isEmpty()){
-				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name)  VALUES(?)");
+			//if (scheduleList.isEmpty()){
+				String query = "INSERT INTO schedule (name)  VALUES(?)";
+				PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, schedule.getName());
 				ps.executeUpdate();
 				
+				ResultSet rs = ps.getGeneratedKeys();
+	            if(rs.next())
+	            {
+	                int last_inserted_id = rs.getInt(1);
+	                schedule.setId(last_inserted_id);
+	            }
+				/*
 			}
 			else{
 				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name, offeringid)  VALUES(?,?)");
@@ -128,10 +152,12 @@ public class ScheduleDAO {
 	
 					ps.setString(1, schedule.getName());
 					ps.setInt(2, offering.getId());
-	
+
 					ps.execute();
 				}
-			}
+			}*/
+			
+			
 
 		} catch (SQLException e) {
 			e.printStackTrace();

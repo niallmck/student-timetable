@@ -40,7 +40,7 @@ public class ScheduleManager {
 		HashSet<String> times = new HashSet<String>();
 		for (Iterator<Offering> iterator = scheduleList.iterator(); iterator.hasNext();) {
 			Offering offering = (Offering) iterator.next();
-			String daysTimes = offering.getDayTime();
+			String daysTimes = offering.getDaysTimes();
 			StringTokenizer tokens = new StringTokenizer(daysTimes, ",");
 			while (tokens.hasMoreTokens()) {
 				String dayTime = tokens.nextToken();

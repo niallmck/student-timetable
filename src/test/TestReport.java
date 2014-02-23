@@ -1,6 +1,17 @@
+package test;
+
 import junit.framework.TestCase;
+
 import java.util.List;
 import java.util.Collection;
+
+import timetable.Report;
+import dao.CourseDAO;
+import dao.OfferingDAO;
+import dao.ScheduleDAO;
+import entity.Course;
+import entity.Offering;
+import entity.Schedule;
 
 public class TestReport extends TestCase {
 
@@ -9,7 +20,7 @@ public class TestReport extends TestCase {
 	}
 	
 	public void testEmptyReport() throws Exception {
-		Schedule.deleteAll();
+		ScheduleDAO.deleteAll();
 		Report report = new Report();
 		StringBuffer buffer = new StringBuffer();
 		report.write(buffer);
@@ -17,26 +28,26 @@ public class TestReport extends TestCase {
 	}
 	
 	public void testReport() throws Exception {
-		Schedule.deleteAll();
-		Course cs101 = Course.create("CS101", 3);
-		cs101.update();
-		Offering off1 = Offering.create(cs101, "M10");
-		off1.update();
-		Offering off2 = Offering.create(cs101, "T9");
-		off2.update();
-		Schedule s = Schedule.create("Bob");
+		ScheduleDAO.deleteAll();
+		Course cs101 = CourseDAO.create(new Course("CS101", 3));
+		CourseDAO.update(cs101);
+		Offering off1 = OfferingDAO.create(new Offering(cs101, "M10"));
+		OfferingDAO.update(off1);
+		Offering off2 = OfferingDAO.create(new Offering(cs101, "T9"));
+		OfferingDAO.update(off2);
+		Schedule s = ScheduleDAO.create(new Schedule("Bob"));
 		s.add(off1);
 		s.add(off2);
-		s.update();
-		Schedule s2 = Schedule.create("Alice");
+		ScheduleDAO.update(s);
+		Schedule s2 = ScheduleDAO.create(new Schedule("Alice"));
 		s2.add(off1);
-		s2.update();
+		ScheduleDAO.update(s2);
 		Report report = new Report();
 		StringBuffer buffer = new StringBuffer();
 		report.write(buffer);
 		String result = buffer.toString();
 		String valid1 = "CS101 M10\n\tAlice\n\tBob\n" + "CS101 T9\n\tBob\n" + "Number of scheduled offerings: 2\n";
-		String valid2 = "CS101 T9\n\tBob\n" + "CS101 M10\n\tAlice\n\tBob\n" + "Number of scheduled offerings: 2\n";
+		String valid2 = "CS101 T9\n\tBob\n" + "CS101 M10\n\tBob\n\tAlice\n" + "Number of scheduled offerings: 2\n";
 		assertTrue(result.equals(valid1) || result.equals(valid2));
 	}
 }
