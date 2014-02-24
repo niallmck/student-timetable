@@ -12,20 +12,49 @@ import entity.Offering;
 import entity.Schedule;
 
 public class ScheduleDAO {
-
-	public static void deleteAll() {
+	
+	/**
+	 * Add a new Schedule to the Database.
+	 * @param schedule - The Schedule object to save.
+	 * @return - The saved Schedule object.
+	 */
+	public static Schedule create(Schedule schedule) {
+		ArrayList<Offering> scheduleList = schedule.getSchedule();
+		
+		delete(schedule);
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement ps = conn
-					.prepareStatement("DELETE from schedule");
-			ps.execute();
+			
+			// Check if a scheduleList was intialised when the Schedule object was created.
+			// If so, we also want to store that scheduleList.
+			if (scheduleList.isEmpty()){
+				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name)  VALUES(?)");
+				ps.setString(1, schedule.getName());
+				ps.execute();
+			}
+			else{
+				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name, offeringid)  VALUES(?,?)");
+	
+				for (int i = 0; i < scheduleList.size(); i++) {
+					Offering offering = (Offering) scheduleList.get(i);
+	
+					ps.setString(1, schedule.getName());
+					ps.setInt(2, offering.getId());
+					ps.execute();
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionManager.closeConnection();
 		}
+		return schedule;
 	}
 
+	/**
+	 * Get all Schedules stored in the Database.
+	 * @return - An ArrayList of Schedule objects.
+	 */
 	public static ArrayList<Schedule> getAll() {
 		ArrayList<Schedule> scheduleList = new ArrayList<Schedule>();
 		ArrayList<String> scheduleNames = new ArrayList<String>();
@@ -52,13 +81,17 @@ public class ScheduleDAO {
 		return scheduleList;
 	}
 
+	/**
+	 * Find a Schedule by its name.
+	 * @param name - String name of the sought Schedule.
+	 * @return - The given Schedule object if found, null if not.
+	 */
 	public static Schedule findByName(String name) {
 		Schedule schedule = null;
 		ArrayList<Integer> offeringIds = new ArrayList<Integer>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement ps = conn
-					.prepareStatement("SELECT * FROM schedule WHERE name = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM schedule WHERE name = ?");
 			ps.setString(1, name);
 			ResultSet rs = ps.executeQuery();
 			schedule = new Schedule(name);
@@ -72,7 +105,7 @@ public class ScheduleDAO {
 			ConnectionManager.closeConnection();
 		}
 		
-		// We then use the OfferingDAO to retrieve the Offering objects associated with the schedule.
+		// Use the OfferingDAO to retrieve the Offering objects associated with the schedule.
 		for (int i = 0; i < offeringIds.size(); i++){
 			Offering offering = (Offering) OfferingDAO.findById(offeringIds.get(i));
 			schedule.add(offering);
@@ -81,91 +114,67 @@ public class ScheduleDAO {
 		return schedule;
 	}
 
+	/**
+	 * Commit changes in a Schedule object to the database.
+	 * @param schedule - The updated Schedule object.
+	 */
 	public static void update(Schedule schedule) {
 		ArrayList<Offering> scheduleList = schedule.getSchedule();
+		
+		delete(schedule);
+		try {
+			Connection conn = ConnectionManager.getConnection();
 
+			for (int i = 0; i < scheduleList.size(); i++) {
+				Offering offering = (Offering) scheduleList.get(i);
+				
+				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name, offeringid)  VALUES(?, ?)");
+
+				ps.setString(1, schedule.getName());
+				ps.setInt(2, offering.getId());
+				
+				ps.execute();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionManager.closeConnection();
+		}
+
+	}
+
+	/**
+	 * Delete a given schedule from the Database.
+	 * @param schedule - The Schedule object to delete.
+	 */
+	public static void delete(Schedule schedule) {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn.prepareStatement("DELETE FROM schedule WHERE name = ?");
 			ps.setString(1, schedule.getName());
 			ps.execute();
-
-			for (int i = 0; i < scheduleList.size(); i++) {
-				Offering offering = (Offering) scheduleList.get(i);
-				
-				PreparedStatement ps1 = conn.prepareStatement("INSERT INTO schedule (name, offeringid)  VALUES(?, ?)");
-
-				ps1.setString(1, schedule.getName());
-				ps1.setInt(2, offering.getId());
-				
-				ps1.execute();
-			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionManager.closeConnection();
 		}
-
 	}
-
-	public static void delete(Object object) {
-		Schedule schedule = (Schedule) object;
+	
+	/**
+	 * Delete all Schedules from the Database.
+	 */
+	public static void deleteAll() {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement ps = conn
-					.prepareStatement("DELETE FROM schedule WHERE name = ?");
-			ps.setString(1, schedule.getName());
+					.prepareStatement("DELETE from schedule");
 			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			ConnectionManager.closeConnection();
 		}
-	}
-
-	public static Schedule create(Schedule schedule) {
-		ArrayList<Offering> scheduleList = schedule.getSchedule();
-
-		try {
-			Connection conn = ConnectionManager.getConnection();
-			
-			//if (scheduleList.isEmpty()){
-				String query = "INSERT INTO schedule (name)  VALUES(?)";
-				PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, schedule.getName());
-				ps.executeUpdate();
-				
-				ResultSet rs = ps.getGeneratedKeys();
-	            if(rs.next())
-	            {
-	                int last_inserted_id = rs.getInt(1);
-	                schedule.setId(last_inserted_id);
-	            }
-				/*
-			}
-			else{
-				PreparedStatement ps = conn.prepareStatement("INSERT INTO schedule (name, offeringid)  VALUES(?,?)");
-	
-				for (int i = 0; i < scheduleList.size(); i++) {
-					Offering offering = (Offering) scheduleList.get(i);
-	
-					ps.setString(1, schedule.getName());
-					ps.setInt(2, offering.getId());
-
-					ps.execute();
-				}
-			}*/
-			
-			
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			ConnectionManager.closeConnection();
-		}
-		return schedule;
-
 	}
 
 }

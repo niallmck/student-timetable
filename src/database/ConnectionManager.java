@@ -6,24 +6,19 @@ import java.sql.SQLException;
 
 public class ConnectionManager {
 	
-	private static Connection conn = null;
+	private static Connection conn = null; // This is where our one and only connection will be stored.
 	private static String url = "jdbc:mysql://localhost:3306/studenttimetable";
 	private static String username = "root";
 	private static String password = "dha7fZn7aQ8ssw6c24zFWMhS";
 	
-	public ConnectionManager(){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
+	/**
+	 * Get a connection to the Database.
+	 * @return - A Connection object, connected to the given database, or null if connection fails.
+	 */
 	public static Connection getConnection(){
 		try {
 			if (conn == null || conn.isClosed()){
 				conn = DriverManager.getConnection(url, username, password);
-				System.out.println("Connected to Database.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -31,11 +26,13 @@ public class ConnectionManager {
 		return conn;
 	}
 	
+	/**
+	 * Close the one and only connection if it is open.
+	 */
 	public static void closeConnection(){
 		try {
 			if (conn != null && !conn.isClosed()){
 				conn.close();
-				System.out.println("Closed Database Connection");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

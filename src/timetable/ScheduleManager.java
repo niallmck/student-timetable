@@ -10,6 +10,12 @@ import entity.Course;
 import entity.Offering;
 import entity.Schedule;
 
+/**
+ * Class which carries out business logic on Schedule objects.
+ * @author Niall
+ *
+ */
+
 public class ScheduleManager {
 	
 	private static ArrayList<Offering> scheduleList;

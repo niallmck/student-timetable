@@ -1,5 +1,11 @@
 package entity;
 
+/**
+ * POJO representing an Offering.
+ * @author Niall
+ *
+ */
+
 public class Offering {
 	
 	private int id;

@@ -2,9 +2,6 @@ package test;
 
 import junit.framework.TestCase;
 
-import java.util.List;
-import java.util.Collection;
-
 import timetable.Report;
 import dao.CourseDAO;
 import dao.OfferingDAO;

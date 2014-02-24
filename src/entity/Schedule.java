@@ -1,14 +1,15 @@
 package entity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+
+/**
+ * POJO Representing a Schedule.
+ * @author Niall
+ *
+ */
 
 public class Schedule {
 	
-	private int id;
 	private String name;
 	private int credits = 0;
 	public static final int MIN_CREDITS = 12;
@@ -44,11 +45,6 @@ public class Schedule {
 	
 	public void authorizeOverload(boolean authorized) {
 		permission = authorized;
-	}
-
-	public void setId(int id) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
